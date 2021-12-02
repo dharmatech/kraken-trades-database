@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/KrakenTradesDatabase/kraken-csv-data
+/KrakenTradesDatabase/kraken-trades.db
+/KrakenTradesDatabase/kraken-trades.db-shm
+/KrakenTradesDatabase/kraken-trades.db-wal
