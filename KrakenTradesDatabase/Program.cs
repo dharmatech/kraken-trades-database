@@ -28,65 +28,42 @@ var client = new KrakenClient();
 //initialize();
 
 
-void initialize_from_csv()
+void initialize_from_csv(string filename)
 {
     var config = new CsvConfiguration(CultureInfo.InvariantCulture)
     {
         HasHeaderRecord = false
     };
 
-    using (var reader = new StreamReader(@"C:\Users\dharm\Dropbox\Documents\VisualStudio\KrakenTradesDatabase\KrakenTradesDatabase\kraken-csv-data\Kraken_Trading_History\XBTUSD.csv"))
+    var path = String.Format(@"C:\Users\dharm\Dropbox\Documents\VisualStudio\KrakenTradesDatabase\KrakenTradesDatabase\kraken-csv-data\Kraken_Trading_History\{0}", filename);
+
+    using (var reader = new StreamReader(path))
     using (var csv = new CsvReader(reader, config))
     {
-        var records = csv.GetRecords<CsvRow>().Select(row => new Trade() 
+        var name = filename.Substring(0, filename.Length - 4);
+
+        var symbol = new Symbol() { Name = name };
+
+        var records = csv.GetRecords<CsvRow>().Select(row => new Trade()
         {
             Price = row.Price,
             Quantity = row.Quantity,
-            TimeStamp = DateTimeOffset.FromUnixTimeSeconds(row.TimeStamp).UtcDateTime
+            TimeStamp = DateTimeOffset.FromUnixTimeSeconds(row.TimeStamp).UtcDateTime,
+            Symbol = symbol
         });
 
         using (var db = new AppContext())
         {
-            //db.AddRange(records);
-            //db.SaveChanges();
+
 
             Console.WriteLine(DateTime.Now);
 
-            //foreach (var record in records)
-            //{
-            //    //Console.WriteLine("{0:yyyy-MM-dd}", record.TimeStamp);
-            //    db.Add(record);
-            //    db.SaveChanges();
-            //}
-
-            //while (true)
-            //{
-            //    db.AddRange(records.Take(10000));
-            //    db.SaveChanges();
-            //}
-
-            //while (true)
-            //{
-
-            //    //var items = records.Take(10_000).ToList();
-
-            //    var items = records.Take(100_000).ToList();
-
-            //    if (items.Any() == false) break;
-                                
-            //    db.AddRange(items);
-            //    db.SaveChanges();
-            //}
-
             while (true)
             {
-
-                //var items = records.Take(10_000).ToList();
-
                 var items = records.Take(100_000).ToList();
 
                 if (items.Any() == false) break;
-                                
+
                 Console.WriteLine("{0:yyyy-MM-dd}", items[0].TimeStamp);
 
                 db.AddRange(items);
@@ -98,8 +75,85 @@ void initialize_from_csv()
     }
 }
 
+//initialize_from_csv("WBTCXBT.csv");
 
-initialize_from_csv();
+//initialize_from_csv("RAYUSD.csv");
+
+initialize_from_csv("DOTUSD.csv");
+
+
+//void initialize_from_csv()
+//{
+//    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+//    {
+//        HasHeaderRecord = false
+//    };
+
+//    using (var reader = new StreamReader(@"C:\Users\dharm\Dropbox\Documents\VisualStudio\KrakenTradesDatabase\KrakenTradesDatabase\kraken-csv-data\Kraken_Trading_History\XBTUSD.csv"))
+//    using (var csv = new CsvReader(reader, config))
+//    {
+//        var records = csv.GetRecords<CsvRow>().Select(row => new Trade() 
+//        {
+//            Price = row.Price,
+//            Quantity = row.Quantity,
+//            TimeStamp = DateTimeOffset.FromUnixTimeSeconds(row.TimeStamp).UtcDateTime
+//        });
+
+//        using (var db = new AppContext())
+//        {
+//            //db.AddRange(records);
+//            //db.SaveChanges();
+
+//            Console.WriteLine(DateTime.Now);
+
+//            //foreach (var record in records)
+//            //{
+//            //    //Console.WriteLine("{0:yyyy-MM-dd}", record.TimeStamp);
+//            //    db.Add(record);
+//            //    db.SaveChanges();
+//            //}
+
+//            //while (true)
+//            //{
+//            //    db.AddRange(records.Take(10000));
+//            //    db.SaveChanges();
+//            //}
+
+//            //while (true)
+//            //{
+
+//            //    //var items = records.Take(10_000).ToList();
+
+//            //    var items = records.Take(100_000).ToList();
+
+//            //    if (items.Any() == false) break;
+
+//            //    db.AddRange(items);
+//            //    db.SaveChanges();
+//            //}
+
+//            while (true)
+//            {
+
+//                //var items = records.Take(10_000).ToList();
+
+//                var items = records.Take(100_000).ToList();
+
+//                if (items.Any() == false) break;
+
+//                Console.WriteLine("{0:yyyy-MM-dd}", items[0].TimeStamp);
+
+//                db.AddRange(items);
+//                db.SaveChanges();
+//            }
+
+//            Console.WriteLine(DateTime.Now);
+//        }
+//    }
+//}
+
+
+//initialize_from_csv();
 
 
 public class CsvRow
@@ -116,15 +170,18 @@ public class CsvRow
 }
 
 
+[Microsoft.EntityFrameworkCore.Index(nameof(Name), IsUnique = true)]
 public class Symbol
 {
     public int Id { get; set; }
     public string Name { get; set; }
 }
 
+[Microsoft.EntityFrameworkCore.Index(nameof(TimeStamp))]
 public class Trade
 {
     public int Id { get; set; }
+    public Symbol Symbol { get; set; }
     public decimal Price { get; set; }
     public decimal Quantity { get; set; }
     public DateTime TimeStamp { get; set; }
@@ -147,6 +204,7 @@ public class Trade
 public class AppContext : DbContext
 {
     public DbSet<Trade> Trades { get; set; }
+    public DbSet<Symbol> Symbols { get; set; }
 
     //public DbSet<KrakenTrade> KrakenTrades { get; set; }
 

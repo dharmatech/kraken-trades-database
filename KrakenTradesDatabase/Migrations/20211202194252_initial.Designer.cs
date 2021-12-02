@@ -10,13 +10,31 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KrakenTradesDatabase.Migrations
 {
     [DbContext(typeof(AppContext))]
-    [Migration("20211202023544_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20211202194252_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.0");
+
+            modelBuilder.Entity("Symbol", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Symbols");
+                });
 
             modelBuilder.Entity("Trade", b =>
                 {
@@ -33,6 +51,9 @@ namespace KrakenTradesDatabase.Migrations
                     b.Property<int>("Side")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("SymbolId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");
 
@@ -41,7 +62,22 @@ namespace KrakenTradesDatabase.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SymbolId");
+
+                    b.HasIndex("TimeStamp");
+
                     b.ToTable("Trades");
+                });
+
+            modelBuilder.Entity("Trade", b =>
+                {
+                    b.HasOne("Symbol", "Symbol")
+                        .WithMany()
+                        .HasForeignKey("SymbolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Symbol");
                 });
 #pragma warning restore 612, 618
         }
