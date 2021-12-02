@@ -28,14 +28,8 @@ namespace KrakenTradesDatabase.Migrations
                     b.Property<decimal>("Quantity")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Side")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

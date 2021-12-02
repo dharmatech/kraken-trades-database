@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KrakenTradesDatabase.Migrations
 {
     [DbContext(typeof(AppContext))]
-    [Migration("20211202232507_InitialCreate")]
+    [Migration("20211202234806_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -30,14 +30,8 @@ namespace KrakenTradesDatabase.Migrations
                     b.Property<decimal>("Quantity")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Side")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("TimeStamp")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

@@ -1,12 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CsvHelper;
 using CsvHelper.Configuration;
-using Kraken.Net;
-using Kraken.Net.Objects;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
-
-var client = new KrakenClient();
 
 void initialize_from_csv()
 {
@@ -69,20 +65,6 @@ public class Trade
     public decimal Price { get; set; }
     public decimal Quantity { get; set; }
     public DateTime TimeStamp { get; set; }
-
-    public OrderSide Side { get; set; }
-    public OrderTypeMinimal Type { get; set; }
-        
-    public Trade() { }
-
-    public Trade(KrakenTrade trade)
-    {
-        Price = trade.Price;
-        Quantity = trade.Quantity;
-        TimeStamp = trade.Timestamp;
-        Side = trade.Side;
-        Type = trade.Type;
-    }
 }
 
 public class AppContext : DbContext
