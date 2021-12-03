@@ -13,94 +13,75 @@ SQLitePCL.Batteries.Init();
 var directory = @"C:\Users\dharm\Dropbox\Documents\VisualStudio\KrakenTradesDatabase\KrakenTradesDatabase\kraken-csv-data\Kraken_Trading_History";
 
 void initialize_from_csv(string filename)
-{
-    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-    {
-        HasHeaderRecord = false
-    };
-        
+{        
     var path = Path.Combine(directory, filename);
 
     using (var reader = new StreamReader(path))
-    using (var csv = new CsvReader(reader, config))
+    using (var csv = new CsvReader(reader, 
+        new CsvConfiguration(CultureInfo.InvariantCulture) 
+        { 
+            HasHeaderRecord = false 
+        }))
+    using (var db = new AppContext())
     {
         var name = filename.Substring(0, filename.Length - 4);
 
-        using (var db = new AppContext())
+        if (db.Symbols.Any(symbol => symbol.Name == name))
         {
-            if (db.Symbols.Any(symbol => symbol.Name == name))
-            {
-                Console.WriteLine("Already added {0}", name);
-                return;
-            }
-
-            Console.WriteLine("Adding {0}", name);
-
-            //if (db.Symbols.Any(symbol => symbol.Name == name) == false)
-            //{
-            //    var symbol = new Symbol() { Name = name };
-
-            //    db.Symbols.Add(symbol);
-            //    db.SaveChanges();
-            //}
-
-            var symbol = new Symbol() { Name = name };
-
-            db.Symbols.Add(symbol);
-            db.SaveChanges();
-
-            var symbol_id = db.Symbols.First(symbol => symbol.Name == name).Id;
-
-            var records = csv.GetRecords<CsvRow>().Select(row => new Trade()
-            {
-                Price = row.Price,
-                Quantity = row.Quantity,
-                TimeStamp = DateTimeOffset.FromUnixTimeSeconds(row.TimeStamp).UtcDateTime,
-                //Symbol = symbol
-                SymbolId = symbol_id
-            });
-
-            
-            var timer_outer = new System.Diagnostics.Stopwatch();
-            timer_outer.Start();
-                        
-            while (true)
-            {
-                var items = records.Take(100_000).ToList();
-
-                if (items.Any() == false) break;
-                                
-                Console.Write("Starting batch at {0:yyyy-MM-dd}. ", items[0].TimeStamp);
-
-                var timer = new System.Diagnostics.Stopwatch();
-
-                timer.Start();
-
-                db.BulkInsert(items);
-
-                //db.Trades.AddRange(items);
-
-                db.SaveChanges();
-                //db.BulkSaveChanges();
-
-                timer.Stop();
-
-                Console.WriteLine("Batch took {0}.", timer.Elapsed);
-            }
-
-            timer_outer.Stop();
-
-            //Console.WriteLine("Total added: {0}", db.Trades.Where(trade => trade.SymbolId == symbol_id).Count());
-                                   
-            Console.WriteLine("{1} trades for symbol took {0}.", 
-                timer_outer.Elapsed,
-                db.Trades.Where(trade => trade.SymbolId == symbol_id).Count());
-
-            Console.WriteLine("Records per second: {0:N0}", db.Trades.Where(trade => trade.SymbolId == symbol_id).Count() / timer_outer.Elapsed.TotalSeconds);
-
-            Console.WriteLine();
+            Console.WriteLine("Already added {0}", name);
+            return;
         }
+
+        Console.WriteLine("Adding {0}", name);
+        
+        db.Symbols.Add(new Symbol() { Name = name });
+        db.SaveChanges();
+
+        var symbol_id = db.Symbols.First(symbol => symbol.Name == name).Id;
+
+        var records = csv.GetRecords<CsvRow>().Select(row => new Trade()
+        {
+            Price = row.Price,
+            Quantity = row.Quantity,
+            TimeStamp = DateTimeOffset.FromUnixTimeSeconds(row.TimeStamp).UtcDateTime,
+            SymbolId = symbol_id
+        });
+                    
+        var timer_outer = new System.Diagnostics.Stopwatch();
+        timer_outer.Start();
+                        
+        while (true)
+        {
+            var items = records.Take(100_000).ToList();
+
+            if (items.Any() == false) break;
+                                
+            Console.Write("Starting batch at {0:yyyy-MM-dd}. ", items[0].TimeStamp);
+
+            var timer = new System.Diagnostics.Stopwatch();
+
+            timer.Start();
+
+            db.BulkInsert(items);
+                
+            db.SaveChanges();
+                
+            timer.Stop();
+
+            Console.WriteLine("Batch took {0}.", timer.Elapsed);
+        }
+
+        timer_outer.Stop();
+                                                           
+        Console.WriteLine("{1} trades for symbol took {0}.", 
+            timer_outer.Elapsed,
+            db.Trades.Where(trade => trade.SymbolId == symbol_id).Count());
+
+        Console.WriteLine("Records per second: {0:N0}", db.Trades.Where(trade => trade.SymbolId == symbol_id).Count() / timer_outer.Elapsed.TotalSeconds);
+
+        Console.WriteLine();
     }
+    
 }
 
 //initialize_from_csv("WBTCXBT.csv");
@@ -111,8 +92,6 @@ void initialize_from_csv(string filename)
 
 void import_from_directory()
 {
-    //var directory_info = new DirectoryInfo(@"C:\Users\dharm\Dropbox\Documents\VisualStudio\KrakenTradesDatabase\KrakenTradesDatabase\kraken-csv-data\Kraken_Trading_History");
-
     var directory_info = new DirectoryInfo(directory);
 
     var file_infos = directory_info.GetFiles("*.csv");
@@ -177,19 +156,7 @@ public class AppContext : DbContext
 {
     public DbSet<Trade> Trades { get; set; }
     public DbSet<Symbol> Symbols { get; set; }
-
-    //public DbSet<KrakenTrade> KrakenTrades { get; set; }
-
-    //public AppContext()
-    //{
-    //    var folder = Environment.SpecialFolder.LocalApplicationData;
-
-    //    var path = Environment.GetFolderPath(folder);
-
-    //    DbPath
-
-    //}
-
+        
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var folder = Environment.SpecialFolder.LocalApplicationData;
@@ -197,11 +164,7 @@ public class AppContext : DbContext
         var path = Environment.GetFolderPath(folder);
 
         var db_path = $"{path}{System.IO.Path.DirectorySeparatorChar}kraken-trades.db";
-
-        //optionsBuilder.UseSqlite("Data Source=kraken-trades.db");
-
+                
         optionsBuilder.UseSqlite($"Data Source={db_path}");
     }
-
-
 }
