@@ -29,14 +29,26 @@ void initialize_from_csv()
             {
                 //var items = records.Take(10_000).ToList();
 
+                //Console.WriteLine("reading batch of records from CSV");
+
                 var items = records.Take(100_000).ToList();
 
                 if (items.Any() == false) break;
+                
+                Console.Write("Starting batch at {0:yyyy-MM-dd}. ", items[0].TimeStamp);
 
-                Console.WriteLine("{0:yyyy-MM-dd}", items[0].TimeStamp);
+                var timer = new System.Diagnostics.Stopwatch();
+
+                timer.Start();
 
                 db.AddRange(items);
                 db.SaveChanges();
+
+                timer.Stop();
+
+                Console.WriteLine("Batch took {0}.", timer.Elapsed);
+
+                //db.ChangeTracker.Clear();
             }
 
             Console.WriteLine(DateTime.Now);
