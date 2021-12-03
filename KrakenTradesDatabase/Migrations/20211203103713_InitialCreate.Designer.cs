@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KrakenTradesDatabase.Migrations
 {
     [DbContext(typeof(AppContext))]
-    [Migration("20211202194252_initial")]
-    partial class initial
+    [Migration("20211203103713_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

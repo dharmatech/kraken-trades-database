@@ -2,31 +2,15 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.Configuration.Attributes;
+using EFCore.BulkExtensions;
 using Kraken.Net;
 using Kraken.Net.Objects;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
-var client = new KrakenClient();
+SQLitePCL.Batteries.Init();
 
-//var trades = client.GetTradeHistoryAsync("XBTUSD").Result;
-
-//var trades = client.GetTradeHistoryAsync("XBTUSD", DateTime.MinValue).Result;
-
-//var trades = client.GetTradeHistoryAsync("XBTUSD", new DateTime(2000, 1, 1)).Result;
-
-//void initialize()
-//{
-//    using (var db = new AppContext())
-//    {
-//        db.AddRange(trades.Data.Data.Select(kraken_trade => new Trade(kraken_trade)));
-
-//        db.SaveChanges();
-//    }
-//}
-
-//initialize();
-
+var directory = @"C:\Users\dharm\Dropbox\Documents\VisualStudio\KrakenTradesDatabase\KrakenTradesDatabase\kraken-csv-data\Kraken_Trading_History";
 
 void initialize_from_csv(string filename)
 {
@@ -34,43 +18,87 @@ void initialize_from_csv(string filename)
     {
         HasHeaderRecord = false
     };
-
-    var path = String.Format(@"C:\Users\dharm\Dropbox\Documents\VisualStudio\KrakenTradesDatabase\KrakenTradesDatabase\kraken-csv-data\Kraken_Trading_History\{0}", filename);
+        
+    var path = Path.Combine(directory, filename);
 
     using (var reader = new StreamReader(path))
     using (var csv = new CsvReader(reader, config))
     {
         var name = filename.Substring(0, filename.Length - 4);
 
-        var symbol = new Symbol() { Name = name };
-
-        var records = csv.GetRecords<CsvRow>().Select(row => new Trade()
-        {
-            Price = row.Price,
-            Quantity = row.Quantity,
-            TimeStamp = DateTimeOffset.FromUnixTimeSeconds(row.TimeStamp).UtcDateTime,
-            Symbol = symbol
-        });
-
         using (var db = new AppContext())
         {
+            if (db.Symbols.Any(symbol => symbol.Name == name))
+            {
+                Console.WriteLine("Already added {0}", name);
+                return;
+            }
 
+            Console.WriteLine("Adding {0}", name);
 
-            Console.WriteLine(DateTime.Now);
+            //if (db.Symbols.Any(symbol => symbol.Name == name) == false)
+            //{
+            //    var symbol = new Symbol() { Name = name };
 
+            //    db.Symbols.Add(symbol);
+            //    db.SaveChanges();
+            //}
+
+            var symbol = new Symbol() { Name = name };
+
+            db.Symbols.Add(symbol);
+            db.SaveChanges();
+
+            var symbol_id = db.Symbols.First(symbol => symbol.Name == name).Id;
+
+            var records = csv.GetRecords<CsvRow>().Select(row => new Trade()
+            {
+                Price = row.Price,
+                Quantity = row.Quantity,
+                TimeStamp = DateTimeOffset.FromUnixTimeSeconds(row.TimeStamp).UtcDateTime,
+                //Symbol = symbol
+                SymbolId = symbol_id
+            });
+
+            
+            var timer_outer = new System.Diagnostics.Stopwatch();
+            timer_outer.Start();
+                        
             while (true)
             {
                 var items = records.Take(100_000).ToList();
 
                 if (items.Any() == false) break;
+                                
+                Console.Write("Starting batch at {0:yyyy-MM-dd}. ", items[0].TimeStamp);
 
-                Console.WriteLine("{0:yyyy-MM-dd}", items[0].TimeStamp);
+                var timer = new System.Diagnostics.Stopwatch();
 
-                db.AddRange(items);
+                timer.Start();
+
+                db.BulkInsert(items);
+
+                //db.Trades.AddRange(items);
+
                 db.SaveChanges();
+                //db.BulkSaveChanges();
+
+                timer.Stop();
+
+                Console.WriteLine("Batch took {0}.", timer.Elapsed);
             }
 
-            Console.WriteLine(DateTime.Now);
+            timer_outer.Stop();
+
+            //Console.WriteLine("Total added: {0}", db.Trades.Where(trade => trade.SymbolId == symbol_id).Count());
+                                   
+            Console.WriteLine("{1} trades for symbol took {0}.", 
+                timer_outer.Elapsed,
+                db.Trades.Where(trade => trade.SymbolId == symbol_id).Count());
+
+            Console.WriteLine("Records per second: {0:N0}", db.Trades.Where(trade => trade.SymbolId == symbol_id).Count() / timer_outer.Elapsed.TotalSeconds);
+
+            Console.WriteLine();
         }
     }
 }
@@ -79,82 +107,23 @@ void initialize_from_csv(string filename)
 
 //initialize_from_csv("RAYUSD.csv");
 
-initialize_from_csv("DOTUSD.csv");
+//initialize_from_csv("DOTUSD.csv");
 
+void import_from_directory()
+{
+    //var directory_info = new DirectoryInfo(@"C:\Users\dharm\Dropbox\Documents\VisualStudio\KrakenTradesDatabase\KrakenTradesDatabase\kraken-csv-data\Kraken_Trading_History");
 
-//void initialize_from_csv()
-//{
-//    var config = new CsvConfiguration(CultureInfo.InvariantCulture)
-//    {
-//        HasHeaderRecord = false
-//    };
+    var directory_info = new DirectoryInfo(directory);
 
-//    using (var reader = new StreamReader(@"C:\Users\dharm\Dropbox\Documents\VisualStudio\KrakenTradesDatabase\KrakenTradesDatabase\kraken-csv-data\Kraken_Trading_History\XBTUSD.csv"))
-//    using (var csv = new CsvReader(reader, config))
-//    {
-//        var records = csv.GetRecords<CsvRow>().Select(row => new Trade() 
-//        {
-//            Price = row.Price,
-//            Quantity = row.Quantity,
-//            TimeStamp = DateTimeOffset.FromUnixTimeSeconds(row.TimeStamp).UtcDateTime
-//        });
+    var file_infos = directory_info.GetFiles("*.csv");
 
-//        using (var db = new AppContext())
-//        {
-//            //db.AddRange(records);
-//            //db.SaveChanges();
+    foreach (var filename in file_infos.Select(info => info.Name))
+    {
+        initialize_from_csv(filename);
+    }
+}
 
-//            Console.WriteLine(DateTime.Now);
-
-//            //foreach (var record in records)
-//            //{
-//            //    //Console.WriteLine("{0:yyyy-MM-dd}", record.TimeStamp);
-//            //    db.Add(record);
-//            //    db.SaveChanges();
-//            //}
-
-//            //while (true)
-//            //{
-//            //    db.AddRange(records.Take(10000));
-//            //    db.SaveChanges();
-//            //}
-
-//            //while (true)
-//            //{
-
-//            //    //var items = records.Take(10_000).ToList();
-
-//            //    var items = records.Take(100_000).ToList();
-
-//            //    if (items.Any() == false) break;
-
-//            //    db.AddRange(items);
-//            //    db.SaveChanges();
-//            //}
-
-//            while (true)
-//            {
-
-//                //var items = records.Take(10_000).ToList();
-
-//                var items = records.Take(100_000).ToList();
-
-//                if (items.Any() == false) break;
-
-//                Console.WriteLine("{0:yyyy-MM-dd}", items[0].TimeStamp);
-
-//                db.AddRange(items);
-//                db.SaveChanges();
-//            }
-
-//            Console.WriteLine(DateTime.Now);
-//        }
-//    }
-//}
-
-
-//initialize_from_csv();
-
+import_from_directory();
 
 public class CsvRow
 {
@@ -181,7 +150,10 @@ public class Symbol
 public class Trade
 {
     public int Id { get; set; }
-    public Symbol Symbol { get; set; }
+
+    public int SymbolId { get; set; }
+
+    public Symbol Symbol { get; set; } // navigation property
     public decimal Price { get; set; }
     public decimal Quantity { get; set; }
     public DateTime TimeStamp { get; set; }
