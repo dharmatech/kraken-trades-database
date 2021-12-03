@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using CsvHelper;
 using CsvHelper.Configuration;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
@@ -41,7 +42,11 @@ void initialize_from_csv()
 
                 timer.Start();
 
-                db.AddRange(items);
+                //db.AddRange(items);
+                //db.Trades.AddRange(items);
+
+                db.BulkInsert(items);
+
                 db.SaveChanges();
 
                 timer.Stop();
