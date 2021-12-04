@@ -47,8 +47,7 @@ void initialize_from_csv(string filename)
             SymbolId = symbol_id
         });
                     
-        var timer_outer = new System.Diagnostics.Stopwatch();
-        timer_outer.Start();
+        var timer_outer = new System.Diagnostics.Stopwatch(); timer_outer.Start();
                         
         while (true)
         {
@@ -58,12 +57,9 @@ void initialize_from_csv(string filename)
                                 
             Console.Write("Starting batch at {0:yyyy-MM-dd}. ", items[0].TimeStamp);
 
-            var timer = new System.Diagnostics.Stopwatch();
-
-            timer.Start();
+            var timer = new System.Diagnostics.Stopwatch(); timer.Start();
 
             db.BulkInsert(items);
-                
             db.SaveChanges();
                 
             timer.Stop();
