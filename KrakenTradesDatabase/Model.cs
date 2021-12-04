@@ -30,16 +30,16 @@ namespace KrakenTradesDatabase
         public OrderSide Side { get; set; }
         public OrderTypeMinimal Type { get; set; }
 
-        public Trade() { }
+        //public Trade() { }
 
-        public Trade(KrakenTrade trade)
-        {
-            Price = trade.Price;
-            Quantity = trade.Quantity;
-            TimeStamp = trade.Timestamp;
-            Side = trade.Side;
-            Type = trade.Type;
-        }
+        //public Trade(KrakenTrade trade)
+        //{
+        //    Price = trade.Price;
+        //    Quantity = trade.Quantity;
+        //    TimeStamp = trade.Timestamp;
+        //    Side = trade.Side;
+        //    Type = trade.Type;
+        //}
     }
 
     public class AppDbContext : DbContext
