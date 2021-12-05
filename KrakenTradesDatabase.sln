@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrakenTradesDatabase", "Kra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrakenImportCsv", "KrakenImportCsv\KrakenImportCsv.csproj", "{F5F67CAD-628B-4EB1-8536-1A47012DB34F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrakenImportApi", "KrakenImportApi\KrakenImportApi.csproj", "{A4308C1B-2061-40EA-9B81-F24D3D367AEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F5F67CAD-628B-4EB1-8536-1A47012DB34F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5F67CAD-628B-4EB1-8536-1A47012DB34F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5F67CAD-628B-4EB1-8536-1A47012DB34F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4308C1B-2061-40EA-9B81-F24D3D367AEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4308C1B-2061-40EA-9B81-F24D3D367AEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4308C1B-2061-40EA-9B81-F24D3D367AEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4308C1B-2061-40EA-9B81-F24D3D367AEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
