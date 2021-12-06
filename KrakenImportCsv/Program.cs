@@ -99,10 +99,16 @@ namespace KrakenImportCsv
 
             var file_infos = directory_info.GetFiles("*.csv");
 
+            var timer = new System.Diagnostics.Stopwatch(); timer.Start();
+
             foreach (var filename in file_infos.Select(info => info.Name))
             {
                 initialize_from_csv(filename);
             }
+
+            timer.Stop();
+
+            Console.WriteLine("Total time: {0}.", timer.Elapsed);
         }
 
         public static void Main(string[] args)

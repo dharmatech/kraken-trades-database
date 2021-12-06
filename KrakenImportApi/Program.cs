@@ -42,7 +42,7 @@ namespace KrakenImportApi
 
                 while (true)
                 {
-                    Console.Write("Requesting trades via API since {0:yyyy-MM-dd hh:mm:ss}. ", time_stamp);
+                    Console.Write("Requesting trades via API since {0:yyyy-MM-dd HH:mm:ss}. ", time_stamp);
 
                     var kraken_trades = client.GetTradeHistoryAsync(name, time_stamp).Result;
                                         
@@ -90,7 +90,8 @@ namespace KrakenImportApi
             //import_from_api("ADAETH");
             //import_from_api("1INCHUSD");
             //import_from_api("AAVEUSD");
-            import_from_api("AAVEETH");
+            //import_from_api("AAVEETH");
+            import_from_api("XBTUSD");
         }
     }
 }
