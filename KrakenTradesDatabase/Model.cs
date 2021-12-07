@@ -1,5 +1,6 @@
 ﻿using Kraken.Net.Objects;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,13 +50,33 @@ namespace KrakenTradesDatabase
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var folder = Environment.SpecialFolder.LocalApplicationData;
+            //var folder = Environment.SpecialFolder.LocalApplicationData;
 
-            var path = Environment.GetFolderPath(folder);
+            //var path = Environment.GetFolderPath(folder);
 
-            var db_path = $"{path}{System.IO.Path.DirectorySeparatorChar}kraken-trades.db";
+            //var db_path = $"{path}{System.IO.Path.DirectorySeparatorChar}kraken-trades.db";
 
-            optionsBuilder.UseSqlite($"Data Source={db_path}");
+            //optionsBuilder.UseSqlite($"Data Source={db_path}");
+
+            var password =
+                File.ReadAllText(
+                    Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                        "postgres-password"));
+               
+            optionsBuilder.UseNpgsql($"Host=localhost;Database=kraken-trades;Username=postgres;Password={password}");
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasPostgresEnum<OrderSide>();
+            modelBuilder.HasPostgresEnum<OrderTypeMinimal>();
+        }
+
+        static AppDbContext()
+        {
+            NpgsqlConnection.GlobalTypeMapper.MapEnum<OrderSide>();
+            NpgsqlConnection.GlobalTypeMapper.MapEnum<OrderTypeMinimal>();
         }
     }
 }

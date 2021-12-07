@@ -113,7 +113,7 @@ namespace KrakenImportCsv
 
         public static void Main(string[] args)
         {
-            SQLitePCL.Batteries.Init();
+            //SQLitePCL.Batteries.Init();
 
             import_from_directory();
         }
