@@ -59,6 +59,11 @@ namespace KrakenTradesDatabase.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Trades_Price",
+                table: "Trades",
+                column: "Price");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Trades_SymbolId",
                 table: "Trades",
                 column: "SymbolId");

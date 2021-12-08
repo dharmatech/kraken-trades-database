@@ -17,6 +17,7 @@ namespace KrakenTradesDatabase
     }
 
     [Index(nameof(TimeStamp))]
+    [Index(nameof(Price))]
     public class Trade
     {
         public int Id { get; set; }

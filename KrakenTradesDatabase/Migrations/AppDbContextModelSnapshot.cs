@@ -73,6 +73,8 @@ namespace KrakenTradesDatabase.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Price");
+
                     b.HasIndex("SymbolId");
 
                     b.HasIndex("TimeStamp");

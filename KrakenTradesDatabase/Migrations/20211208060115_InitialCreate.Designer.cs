@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KrakenTradesDatabase.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20211207072648_InitialCreate")]
+    [Migration("20211208060115_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,6 +74,8 @@ namespace KrakenTradesDatabase.Migrations
                         .HasColumnType("order_type_minimal");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Price");
 
                     b.HasIndex("SymbolId");
 
