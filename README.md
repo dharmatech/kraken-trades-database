@@ -16,3 +16,12 @@ Program is written in C# using Entity Framework Core.
 - Edit [KrakenImportCsv/Program.cs](https://github.com/dharmatech/kraken-trades-database/blob/009-postgresql/KrakenImportCsv/Program.cs)
   - Change the `directory` to the location of the CSV files you downloaded:
   - `static string directory = @"C:\Users\dharmatech\Kraken_Trading_History";`
+
+At this point you may run `KrakenImportCsv`. This will import the trading data from the CSV files into the database. This process takes around 5 hours on my system.
+
+The CSV files contain data up to the most recent complete quarter. To get the rest of the data up to the present time, the API must be used.
+
+- Edit [KrakenImportApi/Program.cs](https://github.com/dharmatech/kraken-trades-database/blob/009-postgresql/KrakenImportApi/Program.cs)
+  - Specify the trading pair that you'd like to retrieve data for:
+  - `import_from_api("XBTUSD");`
+  - I recommend that you only retrieve trading pairs that you're interested in since it does hammer there servers pretty hard to grab them all.
