@@ -5,6 +5,12 @@ Data is stored in PostgreSQL.
 
 Program is written in C# using Entity Framework Core.
 
+For each trading pair, the `Trades` table stores the following:
+
+- TimeStamp (time of the trade)
+- Price (price of the product at the time of trade)
+- Quantity (amount purchased)
+
 # Setup instructions
 
 - Download the `Single ZIP File` from the following page on the Kraken site:
