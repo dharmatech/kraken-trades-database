@@ -98,6 +98,7 @@ namespace KrakenImportCsv
             var directory_info = new DirectoryInfo(directory);
 
             var file_infos = directory_info.GetFiles("*.csv");
+            //var file_infos = directory_info.GetFiles("XBTUSD.csv");
 
             var timer = new System.Diagnostics.Stopwatch(); timer.Start();
 
