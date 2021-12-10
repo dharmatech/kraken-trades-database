@@ -23,7 +23,7 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                 var timer = new System.Diagnostics.Stopwatch(); timer.Start();
                 
                 var symbol_id = db.Symbols.First(symbol => symbol.Name == "XBTUSD").Id;
-
+                                
                 //var result =
                 //    db.Trades
                 //        .Where(trade => trade.SymbolId == symbol_id)
@@ -35,32 +35,29 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                 //                High = group.Max(trade => trade.Price),
                 //                Low = group.Min(trade => trade.Price)
                 //            });
-
+                
                 // 00:00:11
                 // Fast! But does not have the Open and Close DateTime values.
 
-
-
-                var result =
-                    db.Trades
-                        .Where(trade => trade.SymbolId == symbol_id)
-                        .GroupBy(trade => new { Year = trade.TimeStamp.Year, Month = trade.TimeStamp.Month })
-                        .Select(group =>
-                            new Candle()
-                            {
-                                DateTime = new DateTime(group.Key.Year, group.Key.Month, 1),
-                                High = group.Max(trade => trade.Price),
-                                Low = group.Min(trade => trade.Price),
-                                Open = group.OrderBy(trade => trade.TimeStamp).First().Price,
-                                Close = group.OrderBy(trade => trade.TimeStamp).Last().Price
-                            });
+                //var result =
+                //    db.Trades
+                //        .Where(trade => trade.SymbolId == symbol_id)
+                //        .GroupBy(trade => new { Year = trade.TimeStamp.Year, Month = trade.TimeStamp.Month })
+                //        .Select(group =>
+                //            new Candle()
+                //            {
+                //                DateTime = new DateTime(group.Key.Year, group.Key.Month, 1),
+                //                High = group.Max(trade => trade.Price),
+                //                Low = group.Min(trade => trade.Price),
+                //                Open = group.OrderBy(trade => trade.TimeStamp).First().Price,
+                //                Close = group.OrderBy(trade => trade.TimeStamp).Last().Price
+                //            });
 
                 // Unhandled exception.
                 // Npgsql.PostgresException (0x80004005): 42803:
                 // subquery uses ungrouped column "t.TimeStamp" from outer query
 
                 // Has Open and Close, however does not compile.
-
 
                 //var result =
                 //    db.Trades
