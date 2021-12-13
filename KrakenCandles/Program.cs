@@ -1,6 +1,7 @@
 ﻿using KrakenTradesDatabase;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace KrakenCandles // Note: actual namespace depends on the project name.
@@ -27,36 +28,15 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                 // 1 month
 
                 //var result =
-                //    db.Trades
+                //    db.Trades.Where(trade => trade.SymbolId == symbol_id).ToList()
 
-                //        .Where(trade => trade.SymbolId == symbol_id)
-
-                //        .GroupBy(trade => new { Year = trade.TimeStamp.Year, Month = trade.TimeStamp.Month })
-
-                //        .Select(group =>
-                //            new Candle()
-                //            {
-                //                DateTime = new DateTime(group.Key.Year, group.Key.Month, 1),
-                //                High = group.Max(trade => trade.Price),
-                //                Low = group.Min(trade => trade.Price)
-                //            });
-
-                // 00:00:11
-                // Fast! But does not have the Open and Close DateTime values.
-
-                // 2 months
-
-                //var result =
-                //    db.Trades                        
-                //        .Where(trade => trade.SymbolId == symbol_id)                        
-                //        .ToList()
-                //        .GroupBy(trade => new
-                //        {
-                //            Val = (int) Math.Round(
-                //                (trade.TimeStamp.Year * 100.0 + trade.TimeStamp.Month) / 2.0,
+                //        .GroupBy(trade =>
+                //            (long)
+                //            Math.Round(
+                //                (trade.TimeStamp.Year * 12 + trade.TimeStamp.Month) / 1.0,
                 //                0,
-                //                MidpointRounding.AwayFromZero)
-                //        })
+                //                MidpointRounding.AwayFromZero))
+
                 //        .Select(group =>
                 //            new Candle()
                 //            {
@@ -66,19 +46,18 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                 //                Low = group.Min(trade => trade.Price)
                 //            });
 
-                // 3 months
+                // 9 month
 
                 //var result =
-                //    db.Trades
-                //        .Where(trade => trade.SymbolId == symbol_id)
-                //        .ToList()
-                //        .GroupBy(trade => new
-                //        {
-                //            Val = (int)Math.Round(
-                //                (trade.TimeStamp.Year * 100.0 + trade.TimeStamp.Month) / 3.0,
+                //    db.Trades.Where(trade => trade.SymbolId == symbol_id).ToList()
+
+                //        .GroupBy(trade =>
+                //            (long)
+                //            Math.Round(
+                //                (trade.TimeStamp.Year * 12 + trade.TimeStamp.Month) / 9.0,
                 //                0,
-                //                MidpointRounding.AwayFromZero)
-                //        })
+                //                MidpointRounding.AwayFromZero))
+
                 //        .Select(group =>
                 //            new Candle()
                 //            {
@@ -91,37 +70,14 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                 // 15 months
 
                 //var result =
-                //    db.Trades
-                //        .Where(trade => trade.SymbolId == symbol_id)
-                //        .ToList()
-                //        .GroupBy(trade => new
-                //        {
-                //            Val = (int)Math.Round(
-                //                (trade.TimeStamp.Year * 100.0 + trade.TimeStamp.Month) / 15.0,
-                //                0,
-                //                MidpointRounding.AwayFromZero)
-                //        })
-                //        .Select(group =>
-                //            new Candle()
-                //            {
-                //                DateTime = group.Min(trade => trade.TimeStamp),
-
-                //                High = group.Max(trade => trade.Price),
-                //                Low = group.Min(trade => trade.Price)
-                //            });
-
-                // 3 day
-
-                //var result =
                 //    db.Trades.Where(trade => trade.SymbolId == symbol_id).ToList()
 
-                //        .GroupBy(trade => new
-                //        {
-                //            Val = (int)Math.Round(
-                //                (trade.TimeStamp.Year * 10000.0 + trade.TimeStamp.Month * 100 + trade.TimeStamp.Day) / 3.0,
+                //        .GroupBy(trade =>
+                //            (long)
+                //            Math.Round(
+                //                (trade.TimeStamp.Year * 12 + trade.TimeStamp.Month) / 15.0,
                 //                0,
-                //                MidpointRounding.AwayFromZero)
-                //        })
+                //                MidpointRounding.AwayFromZero))
 
                 //        .Select(group =>
                 //            new Candle()
@@ -133,23 +89,24 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                 //            });
 
 
- 
-                // 9 month
+                // 1 week
 
                 var result =
                     db.Trades.Where(trade => trade.SymbolId == symbol_id).ToList()
 
-                        //.GroupBy(trade =>
-                        //    (int)
-                        //    Math.Round(
-                        //        new DateTimeOffset(trade.TimeStamp).ToUnixTimeSeconds() / TimeSpan.FromDays(30).TotalSeconds,
-                        //        0,
-                        //        MidpointRounding.AwayFromZero))
-
                         .GroupBy(trade =>
                             (long)
                             Math.Round(
-                                (trade.TimeStamp.Year * 12 + trade.TimeStamp.Month) / 9.0,
+
+                                trade.TimeStamp.Year * 52 +
+
+                                new GregorianCalendar().GetWeekOfYear(
+                                    trade.TimeStamp,
+                                    CalendarWeekRule.FirstDay,
+                                    DayOfWeek.Monday)
+
+                                / 1.0,
+
                                 0,
                                 MidpointRounding.AwayFromZero))
 
@@ -162,6 +119,27 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                                 Low = group.Min(trade => trade.Price)
                             });
 
+                // 1 week
+
+                //var result =
+                //    db.Trades.Where(trade => trade.SymbolId == symbol_id).ToList()
+                //        .GroupBy(trade =>
+                //            (long)
+                //            Math.Round(
+                //                trade.TimeStamp.Year * 100 +
+                //                new GregorianCalendar().GetWeekOfYear(trade.TimeStamp, CalendarWeekRule.FirstDay, DayOfWeek.Monday)
+                //                / 1.0,
+                //                0,
+                //                MidpointRounding.AwayFromZero))
+
+                //        .Select(group =>
+                //            new Candle()
+                //            {
+                //                DateTime = group.Min(trade => trade.TimeStamp),
+
+                //                High = group.Max(trade => trade.Price),
+                //                Low = group.Min(trade => trade.Price)
+                //            });
 
                 // 30 days
 
