@@ -44,6 +44,33 @@ namespace KrakenTradesDatabase
         //}
     }
 
+    public enum CandleUnit { Year, Month, Week, Day, Hour, Minute }
+
+    //public class CandleInterval
+    //{
+    //    public int Id { get; set; }
+
+    //}
+
+    public class Candle
+    {
+        public int Id { get; set; }
+
+        public int SymbolId { get; set; }
+        public Symbol Symbol { get; set; } // navigation property
+
+        public DateTimeOffset DateTimeOffset { get; set; }
+
+        public decimal High { get; set; }
+        public decimal Low { get; set; }
+        public decimal Open { get; set; }
+        public decimal Close { get; set; }
+
+        public CandleUnit CandleUnit { get; set; }
+        public int Interval { get; set; }
+
+    }
+
     public class AppDbContext : DbContext
     {
         public DbSet<Trade> Trades { get; set; }
