@@ -23,11 +23,16 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                 var timer = new System.Diagnostics.Stopwatch(); timer.Start();
                 
                 var symbol_id = db.Symbols.First(symbol => symbol.Name == "XBTUSD").Id;
-                                
+
+                // 1 month
+
                 //var result =
                 //    db.Trades
+
                 //        .Where(trade => trade.SymbolId == symbol_id)
+
                 //        .GroupBy(trade => new { Year = trade.TimeStamp.Year, Month = trade.TimeStamp.Month })
+
                 //        .Select(group =>
                 //            new Candle()
                 //            {
@@ -35,82 +40,132 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                 //                High = group.Max(trade => trade.Price),
                 //                Low = group.Min(trade => trade.Price)
                 //            });
-                
+
                 // 00:00:11
                 // Fast! But does not have the Open and Close DateTime values.
 
+                // 2 months
+
                 //var result =
-                //    db.Trades
-                //        .Where(trade => trade.SymbolId == symbol_id)
-                //        .GroupBy(trade => new { Year = trade.TimeStamp.Year, Month = trade.TimeStamp.Month })
+                //    db.Trades                        
+                //        .Where(trade => trade.SymbolId == symbol_id)                        
+                //        .ToList()
+                //        .GroupBy(trade => new
+                //        {
+                //            Val = (int) Math.Round(
+                //                (trade.TimeStamp.Year * 100.0 + trade.TimeStamp.Month) / 2.0,
+                //                0,
+                //                MidpointRounding.AwayFromZero)
+                //        })
                 //        .Select(group =>
                 //            new Candle()
                 //            {
-                //                DateTime = new DateTime(group.Key.Year, group.Key.Month, 1),
-                //                High = group.Max(trade => trade.Price),
-                //                Low = group.Min(trade => trade.Price),
-                //                Open = group.OrderBy(trade => trade.TimeStamp).First().Price,
-                //                Close = group.OrderBy(trade => trade.TimeStamp).Last().Price
-                //            });
+                //                DateTime = group.Min(trade => trade.TimeStamp),
 
-                // Unhandled exception.
-                // Npgsql.PostgresException (0x80004005): 42803:
-                // subquery uses ungrouped column "t.TimeStamp" from outer query
-
-                // Has Open and Close, however does not compile.
-
-                //var result =
-                //    db.Trades
-                //        .Where(trade => trade.SymbolId == symbol_id).ToList()
-                //        .GroupBy(trade => new { Year = trade.TimeStamp.Year, Month = trade.TimeStamp.Month })
-                //        .Select(group =>
-                //            new Candle()
-                //            {
-                //                DateTime = new DateTime(group.Key.Year, group.Key.Month, 1),
-                //                High = group.Max(trade => trade.Price),
-                //                Low = group.Min(trade => trade.Price),
-                //                Open = group.OrderBy(trade => trade.TimeStamp).First().Price,
-                //                Close = group.OrderBy(trade => trade.TimeStamp).Last().Price
-                //            });
-
-                // Explicit call to ToList()
-                // 6 minutes
-
-
-                //var result =
-                //    db.Trades
-                //        .Where(trade => trade.SymbolId == symbol_id).ToList()
-                //        .GroupBy(trade => new { Year = trade.TimeStamp.Year, Month = trade.TimeStamp.Month })
-                //        .Select(group =>
-                //            new Candle()
-                //            {
-                //                DateTime = new DateTime(group.Key.Year, group.Key.Month, 1),
                 //                High = group.Max(trade => trade.Price),
                 //                Low = group.Min(trade => trade.Price)
                 //            });
 
-                // Explicit call to ToList()
-                // 00:06:08
-
-
-
-
+                // 3 months
 
                 //var result =
                 //    db.Trades
                 //        .Where(trade => trade.SymbolId == symbol_id)
-                //        .GroupBy(trade => new { Year = trade.TimeStamp.Year, Month = trade.TimeStamp.Month })
+                //        .ToList()
+                //        .GroupBy(trade => new
+                //        {
+                //            Val = (int)Math.Round(
+                //                (trade.TimeStamp.Year * 100.0 + trade.TimeStamp.Month) / 3.0,
+                //                0,
+                //                MidpointRounding.AwayFromZero)
+                //        })
                 //        .Select(group =>
-                //            new
+                //            new Candle()
                 //            {
-                //                DateTime = new DateTime(group.Key.Year, group.Key.Month, 1),
+                //                DateTime = group.Min(trade => trade.TimeStamp),
+
                 //                High = group.Max(trade => trade.Price),
                 //                Low = group.Min(trade => trade.Price)
                 //            });
+
+                // 15 months
+
+                //var result =
+                //    db.Trades
+                //        .Where(trade => trade.SymbolId == symbol_id)
+                //        .ToList()
+                //        .GroupBy(trade => new
+                //        {
+                //            Val = (int)Math.Round(
+                //                (trade.TimeStamp.Year * 100.0 + trade.TimeStamp.Month) / 15.0,
+                //                0,
+                //                MidpointRounding.AwayFromZero)
+                //        })
+                //        .Select(group =>
+                //            new Candle()
+                //            {
+                //                DateTime = group.Min(trade => trade.TimeStamp),
+
+                //                High = group.Max(trade => trade.Price),
+                //                Low = group.Min(trade => trade.Price)
+                //            });
+
+                // 3 day
+
+                //var result =
+                //    db.Trades.Where(trade => trade.SymbolId == symbol_id).ToList()
+
+                //        .GroupBy(trade => new
+                //        {
+                //            Val = (int)Math.Round(
+                //                (trade.TimeStamp.Year * 10000.0 + trade.TimeStamp.Month * 100 + trade.TimeStamp.Day) / 3.0,
+                //                0,
+                //                MidpointRounding.AwayFromZero)
+                //        })
+
+                //        .Select(group =>
+                //            new Candle()
+                //            {
+                //                DateTime = group.Min(trade => trade.TimeStamp),
+
+                //                High = group.Max(trade => trade.Price),
+                //                Low = group.Min(trade => trade.Price)
+                //            });
+
+
+
+                // 3 day
+
+                var result =
+                    db.Trades.Where(trade => trade.SymbolId == symbol_id).ToList()
+
+                        //.GroupBy(trade => new
+                        //{
+                        //    Val = (int)Math.Round(
+                        //        (trade.TimeStamp.Year * 10000.0 + trade.TimeStamp.Month * 100 + trade.TimeStamp.Day) / 3.0,
+                        //        0,
+                        //        MidpointRounding.AwayFromZero)
+                        //})
+                        
+                        .GroupBy(trade => 
+                            (int)
+                            Math.Round(
+                                new DateTimeOffset(trade.TimeStamp).ToUnixTimeSeconds() / TimeSpan.FromDays(3).TotalSeconds,
+                                0,
+                                MidpointRounding.AwayFromZero))
+
+                        .Select(group =>
+                            new Candle()
+                            {
+                                DateTime = group.Min(trade => trade.TimeStamp),
+
+                                High = group.Max(trade => trade.Price),
+                                Low = group.Min(trade => trade.Price)
+                            });
 
                 foreach (var elt in result)
                 {
-                    Console.WriteLine("{0:yyyy-MM} {1,10:F} {2,10:F} {3,10:F} {4,10:F}",
+                    Console.WriteLine("{0:yyyy-MM-dd} {1,10:F} {2,10:F} {3,10:F} {4,10:F}",
                         elt.DateTime,
                         elt.Open,
                         elt.High,
@@ -118,17 +173,7 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                         elt.Close
                         );
                 }
-
-                //foreach (var elt in result)
-                //{
-                //    Console.WriteLine("{0:yyyy-MM} {1,10:F} {2,10:F} {3} {4}",
-                //        elt.DateTime,
-                //        elt.High,
-                //        elt.Low,
-                //        elt.open_time,
-                //        elt.close_time);
-                //}
-
+                                
                 timer.Stop();
 
                 Console.WriteLine();
