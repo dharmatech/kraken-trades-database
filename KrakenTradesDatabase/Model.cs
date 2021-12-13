@@ -75,6 +75,7 @@ namespace KrakenTradesDatabase
     {
         public DbSet<Trade> Trades { get; set; }
         public DbSet<Symbol> Symbols { get; set; }
+        public DbSet<Candle> Candles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -99,12 +100,14 @@ namespace KrakenTradesDatabase
         {
             modelBuilder.HasPostgresEnum<OrderSide>();
             modelBuilder.HasPostgresEnum<OrderTypeMinimal>();
+            modelBuilder.HasPostgresEnum<CandleUnit>();
         }
 
         static AppDbContext()
         {
             NpgsqlConnection.GlobalTypeMapper.MapEnum<OrderSide>();
             NpgsqlConnection.GlobalTypeMapper.MapEnum<OrderTypeMinimal>();
+            NpgsqlConnection.GlobalTypeMapper.MapEnum<CandleUnit>();
         }
     }
 }
