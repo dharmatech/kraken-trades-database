@@ -69,7 +69,7 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                         throw new Exception("Unsupported CandleUnit value.");
                 }
 
-                Func<Trade, long> grouping_function_alt()
+                Func<Trade, long> grouping_function()
                 {
                     return trade =>
                         (long)
@@ -78,48 +78,11 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                             0,
                             MidpointRounding.AwayFromZero);
                 }
-
-                Func<Trade, long> grouping_function()
-                {
-                    if (unit == CandleUnit.Month)
-                    {
-                        return trade =>
-                            (long)
-                            Math.Round(
-                                (trade.TimeStamp.Year * 12 + trade.TimeStamp.Month) / ((double)interval),
-                                0,
-                                MidpointRounding.AwayFromZero);
-                    }
-                    else if (unit == CandleUnit.Week)
-                    {
-                        return trade =>
-                            (long)
-                            Math.Round(
-                                trade.TimeStamp.Year * 100 +
-                                new GregorianCalendar().GetWeekOfYear(trade.TimeStamp, CalendarWeekRule.FirstDay, DayOfWeek.Monday)
-                                / (double) interval,
-                                0,
-                                MidpointRounding.AwayFromZero);
-                    }
-                    else if (unit == CandleUnit.Day)
-                    {
-                        return trade =>
-                            (long)
-                            Math.Round(
-                                new DateTimeOffset(trade.TimeStamp).ToUnixTimeSeconds() / TimeSpan.FromDays(interval).TotalSeconds,
-                                0,
-                                MidpointRounding.AwayFromZero);
-                    }
-                    else
-                    {
-                        throw new Exception("Unsupported CandleUnit value.");
-                    }
-                }
-                              
+                                                              
                 var result = db.Trades
                     .Where(trade => trade.TimeStamp >= start)
                     .Where(trade => trade.SymbolId == symbol_id).ToList()
-                    .GroupBy(grouping_function_alt())
+                    .GroupBy(grouping_function())
                     .Select(group =>
                         new Candle()
                         {
