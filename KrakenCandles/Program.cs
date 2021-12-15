@@ -58,6 +58,13 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                     else if (unit == CandleUnit.Hour)
                         return new DateTimeOffset(trade.TimeStamp).ToUnixTimeSeconds() / TimeSpan.FromHours(interval).TotalSeconds;
 
+                    //else if (unit == CandleUnit.Hour)
+                    //    return (trade.TimeStamp.Year * 100000 + trade.TimeStamp.DayOfYear * 100 + trade.TimeStamp.Hour) / 
+                    //        (double) interval;
+
+                    else if (unit == CandleUnit.Minute)
+                        return new DateTimeOffset(trade.TimeStamp).ToUnixTimeSeconds() / TimeSpan.FromMinutes(interval).TotalSeconds;
+
                     else
                         throw new Exception("Unsupported CandleUnit value.");
                 }
@@ -135,7 +142,7 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
 
                 foreach (var elt in result)
                 {
-                    Console.WriteLine("{0:yyyy-MM-dd HH} {1,10:F} {2,10:F} {3,10:F} {4,10:F}",
+                    Console.WriteLine("{0:yyyy-MM-dd HH mm} {1,10:F} {2,10:F} {3,10:F} {4,10:F}",
                         elt.DateTimeOffset,
                         elt.Open,
                         elt.High,
@@ -162,7 +169,11 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
             //UpdateCandles("XBTUSD", CandleUnit.Day, 2);
             //UpdateCandles("XBTUSD", CandleUnit.Day, 10);
 
-            UpdateCandles("XBTUSD", CandleUnit.Hour, 1);
+            //UpdateCandles("XBTUSD", CandleUnit.Hour, 1);
+            //UpdateCandles("XBTUSD", CandleUnit.Hour, 2);
+            //UpdateCandles("XBTUSD", CandleUnit.Hour, 3);
+
+            UpdateCandles("XBTUSD", CandleUnit.Minute, 2);
 
             //using (var db = new AppDbContext())
             //{
