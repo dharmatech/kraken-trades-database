@@ -6,15 +6,6 @@ using System.Linq;
 
 namespace KrakenCandles // Note: actual namespace depends on the project name.
 {
-    //public class Candle
-    //{
-    //    public DateTime DateTime { get; set; }
-    //    public decimal High { get; set; }
-    //    public decimal Low { get; set; }
-    //    public decimal Open { get; set; }
-    //    public decimal Close { get; set; }
-    //}
-
     public class Program
     {
         static void UpdateCandles(string name, CandleUnit unit, int interval)
@@ -95,6 +86,9 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
                             High = group.Max(trade => trade.Price),
                             Low = group.Min(trade => trade.Price),
 
+                            Open = group.OrderBy(trade => trade.TimeStamp).First().Price,
+                            Close = group.OrderBy(trade => trade.TimeStamp).Last().Price,
+
                             CandleUnit = unit,
                             Interval = interval
                         });
@@ -120,23 +114,23 @@ namespace KrakenCandles // Note: actual namespace depends on the project name.
 
         public static void Main(string[] args)
         {
-            //UpdateCandles("XBTUSD", CandleUnit.Month, 1);
+            UpdateCandles("XBTUSD", CandleUnit.Month, 1);
             //UpdateCandles("XBTUSD", CandleUnit.Month, 2);
             //UpdateCandles("XBTUSD", CandleUnit.Month, 3);
             //UpdateCandles("XBTUSD", CandleUnit.Month, 15);
 
-            //UpdateCandles("XBTUSD", CandleUnit.Week, 1);
+            UpdateCandles("XBTUSD", CandleUnit.Week, 1);
             //UpdateCandles("XBTUSD", CandleUnit.Week, 2);
 
-            //UpdateCandles("XBTUSD", CandleUnit.Day, 1);
+            UpdateCandles("XBTUSD", CandleUnit.Day, 1);
             //UpdateCandles("XBTUSD", CandleUnit.Day, 2);
             //UpdateCandles("XBTUSD", CandleUnit.Day, 10);
 
-            //UpdateCandles("XBTUSD", CandleUnit.Hour, 1);
+            UpdateCandles("XBTUSD", CandleUnit.Hour, 1);
             //UpdateCandles("XBTUSD", CandleUnit.Hour, 2);
             //UpdateCandles("XBTUSD", CandleUnit.Hour, 3);
 
-            UpdateCandles("XBTUSD", CandleUnit.Minute, 2);
+            UpdateCandles("XBTUSD", CandleUnit.Minute, 15);
 
             //using (var db = new AppDbContext())
             //{
