@@ -39,7 +39,7 @@ namespace KrakenImportCsv
             using (var db = new AppDbContext())
             {
                 var name = filename.Substring(0, filename.Length - 4);
-
+                
                 if (db.Symbols.Any(symbol => symbol.Name == name))
                 {
                     Console.WriteLine("Already added {0}", name);
