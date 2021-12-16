@@ -31,3 +31,7 @@ The CSV files contain data up to the most recent complete quarter. To get the re
   - Specify the trading pair that you'd like to retrieve data for:
   - `import_from_api("XBTUSD");`
   - I recommend that you only retrieve trading pairs that you're interested in since it does hammer there servers pretty hard to grab them all.
+
+# Misc
+
+[Video overview of project](https://youtu.be/fS3egq1_TH4)
